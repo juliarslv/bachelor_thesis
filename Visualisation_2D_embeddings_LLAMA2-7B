@@ -1,0 +1,47 @@
+# pip install matplotlib scikit-learn
+
+from transformers import LlamaTokenizer, LlamaModel
+import torch
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
+# Load the tokenizer and model
+model_name = "meta-llama/Llama-2-7b-hf"
+tokenizer = LlamaTokenizer.from_pretrained(model_name)
+model = LlamaModel.from_pretrained(model_name)
+
+# Input text and tokenization
+text = "Hello, my name is Julia."
+inputs = tokenizer(text, return_tensors="pt")
+input_ids = inputs["input_ids"]
+
+# Get token embeddings
+embedding_layer = model.get_input_embeddings()
+token_embeddings = embedding_layer(input_ids)
+
+# Convert embeddings to numpy for visualization
+embeddings_np = token_embeddings[0].detach().numpy()  # Remove batch dimension and convert to numpy
+
+# Dimensionality reduction with PCA
+pca = PCA(n_components=2)
+embeddings_2d = pca.fit_transform(embeddings_np)
+
+# Convert IDs to tokens for labeling
+tokens = tokenizer.convert_ids_to_tokens(input_ids[0])
+
+# Plot the embeddings in 2D space
+plt.figure(figsize=(10, 8))
+plt.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], marker='o', color='blue')
+
+# Annotate each point with the corresponding token
+for i, token in enumerate(tokens):
+    plt.annotate(token, (embeddings_2d[i, 0], embeddings_2d[i, 1]), fontsize=12)
+
+plt.xlabel("PCA Component 1")
+plt.ylabel("PCA Component 2")
+plt.title("Token Embeddings in 2D Space (PCA)")
+plt.grid(True)
+plt.show()
+
+plt.savefig("token_embeddings_plot.png") 
+
