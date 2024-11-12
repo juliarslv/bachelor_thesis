@@ -1,0 +1,34 @@
+>>> print(token_embeddings)
+tensor([[[ 1.8616e-03, -3.3722e-03,  3.9864e-04,  ..., -8.3008e-03,
+           2.5787e-03, -3.9368e-03],
+         [ 3.8086e-02, -6.8665e-04,  6.8665e-03,  ..., -1.6846e-02,
+           2.3956e-03,  1.5747e-02],
+         [ 9.8228e-05, -2.8229e-03, -7.6904e-03,  ...,  5.0354e-04,
+          -3.6163e-03,  4.0894e-03],
+         ...,
+         [-5.4321e-03,  1.2360e-03,  8.3008e-03,  ...,  1.1169e-02,
+          -4.3335e-03, -7.6904e-03],
+         [ 8.6670e-03, -2.1729e-02, -1.5015e-02,  ...,  4.0527e-02,
+          -1.4771e-02,  1.5869e-02],
+         [-7.2479e-04,  7.7438e-04, -5.0659e-03,  ...,  1.0605e-03,
+          -2.8610e-04, -3.7842e-03]]], grad_fn=<EmbeddingBackward0>)
+
+###### 
+tensor([[[ ... ]]]...) represents the actual embeddings as numerical values.
+
+ grad_fn=<EmbeddingBackward0>) 
+    grad_fn: Tracks which function created the tensor for gradient calculations.
+    <EmbeddingBackward0>: Shows it was created by an embedding layer.
+    Backward0: Enables gradient calculation during backpropagation.
+######
+
+
+>>> print(token_embeddings.shape)
+torch.Size([1, 8, 4096])
+
+####### 
+The shape torch.Size([1, 8, 4096]) means:
+    1: Batch size (1 sentence).
+    8: Number of tokens in the input sentence.
+    4096: Embedding size (each token is represented by a 4096-dimensional vector).
+######
