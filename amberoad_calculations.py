@@ -3,7 +3,7 @@ from datasets import load_dataset
 import pandas as pd
 
 # Load the tokenizer
-model_name = "amberoad/bert-multilingual-passage-reranking-msmarco"  # Updated model name
+model_name = "amberoad/bert-multilingual-passage-reranking-msmarco"  
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 # Define the languages
