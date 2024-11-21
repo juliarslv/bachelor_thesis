@@ -16,7 +16,19 @@ def pretokenize(text, tokenizer):
     """
     return tokenizer.tokenize(text)
 
-# Function to calculate Maximum Compression Ratio
+# Step 1: Load dataset for each language
+loaded_datasets = {}
+for lang in languages:
+    print(f"Loading dataset for language: {lang}")
+    try:
+        # Load the dataset and limit it to 1000 sentences
+        dataset_lang = load_dataset("wikimedia/wikipedia", f"20231101.{lang}", split="train")
+        texts = dataset_lang["text"][:1000]  # Limit to the first 1000 sentences
+        loaded_datasets[lang] = texts  # Store dataset for later calculations
+    except Exception as e:
+        print(f"Error loading dataset for {lang}: {e}")
+
+# Step 2: Calculate Maximum Compression Ratio
 def calculate_compression_ratio(texts, tokenizer):
     """
     Calculates the maximum compression ratio for a set of texts.
@@ -29,33 +41,25 @@ def calculate_compression_ratio(texts, tokenizer):
         num_tokens = len(pre_tokens)
         compression_ratio = num_characters / num_tokens if num_tokens > 0 else 0
         results.append(compression_ratio)
-    return max(results)  # Maximum compression ratio for the language
+    return max(results)  # Return the maximum compression ratio
 
-# Analyze for selected languages
+
 compression_results = []
-for lang in languages:
+for lang, texts in loaded_datasets.items():
+    print(f"Calculating Maximum Compression Ratio for: {lang}")
     try:
-        print(f"Processing language: {lang}")
-        # Load only 1% of the dataset and limit to 100 entries for efficiency
-        dataset_lang = load_dataset("wikimedia/wikipedia", f"20231101.{lang}", split="train[:1%]")
-        texts = dataset_lang["text"][:100]  # Limit to first 100 entries
-        
-        # Calculate Maximum Compression Ratio
         max_compression_ratio = calculate_compression_ratio(texts, tokenizer)
         compression_results.append({"Language": lang, "Max Compression Ratio": max_compression_ratio})
     except Exception as e:
         print(f"Error processing {lang}: {e}")
 
-# Create a DataFrame for results
+# Save Maximum Compression Ratio results
 df_compression = pd.DataFrame(compression_results)
-
-# Save the results to a CSV file
-df_compression.to_csv("language_compression_results_with_pretokenization_limited.csv", index=False)
-print("Results saved to language_compression_results_with_pretokenization_limited.csv")
+df_compression.to_csv("max_compression_ratio.csv", index=False)
+print("Results saved to max_compression_ratio.csv")
 print(df_compression)
 
-
-# Function to calculate Minimum Tokenization Parity
+# Step 3: Calculate Minimum Tokenization Parity
 def calculate_min_tokenization_parity(texts, tokenizer):
     """
     Calculates the minimum tokenization parity for a set of texts.
@@ -66,26 +70,17 @@ def calculate_min_tokenization_parity(texts, tokenizer):
     max_tokens = max(token_counts)
     return min_tokens / max_tokens if max_tokens > 0 else 0
 
-
-# Calculate Minimum Tokenization Parity for each language
 tokenization_parity_results = []
-for lang in languages:
+for lang, texts in loaded_datasets.items():
+    print(f"Calculating Minimum Tokenization Parity for: {lang}")
     try:
-        print(f"Calculating Minimum Tokenization Parity for: {lang}")
-        # Use the same 1% dataset already loaded
-        dataset_lang = load_dataset("wikimedia/wikipedia", f"20231101.{lang}", split="train[:1%]")
-        texts = dataset_lang["text"][:100]  # Limit to first 100 entries for consistency
-        
-        # Calculate Minimum Tokenization Parity
         min_tokenization_parity = calculate_min_tokenization_parity(texts, tokenizer)
         tokenization_parity_results.append({"Language": lang, "Minimum Tokenization Parity": min_tokenization_parity})
     except Exception as e:
         print(f"Error processing {lang}: {e}")
 
-# Create a DataFrame for results
+# Save Minimum Tokenization Parity results
 df_parity = pd.DataFrame(tokenization_parity_results)
-
-# Save the results to a CSV file
-df_parity.to_csv("minimum_tokenization_parity_1percent.csv", index=False)
-print("Results saved to minimum_tokenization_parity_1percent.csv")
+df_parity.to_csv("min_tokenization_parity.csv", index=False)
+print("Results saved to min_tokenization_parity.csv")
 print(df_parity)
