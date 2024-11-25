@@ -1,0 +1,15 @@
+        Language         Max Compression Ratio
+0       en               5.639175
+1       de               5.358974
+2       ar               4.361702
+3       ru               4.929078
+4       be               2.684932
+
+
+
+        Language         Minimum Tokenization Parity
+0       en               0.001545
+1       de               0.000152
+2       ar               0.000091
+3       ru               0.000714
+4       be               0.007543
