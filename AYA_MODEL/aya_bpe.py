@@ -1,16 +1,16 @@
 from transformers import AutoTokenizer
 from datasets import load_dataset
 import pandas as pd
+import re
 
-# Load the tokenizer with BPE
-model_name = "CohereForAI/aya-expanse-8b"  # Ensure the tokenizer uses BPE
+model_name = "CohereForAI/aya-expanse-8b" 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 # Define the languages
 languages = ["en", "de", "ar", "ru", "be"]  # English, German, Arabic, Russian, Belorussian
 
-# Function to tokenize texts using BPE
-def tokenize_with_bpe(texts, tokenizer):
+# Function to tokenize using BPE
+def tokenize(texts, tokenizer):
     """
     Tokenizes a list of texts using the BPE-based tokenizer.
     Returns a dictionary containing:
@@ -28,25 +28,64 @@ def tokenize_with_bpe(texts, tokenizer):
         "token_counts": token_counts
     }
 
+# Regex-based sentence tokenizer
+def split_into_sentences(text):
+    """
+    Splits a text into sentences using a regex-based approach.
+    Handles multiple languages to a reasonable degree.
+    """
+    sentence_endings = r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|!)(\s|\n)'  # Split on sentence endings or newlines
+    sentences = re.split(sentence_endings, text)
+    return [sentence.strip() for sentence in sentences if sentence.strip()]
+
 # Step 1: Load and tokenize datasets for each language
-loaded_datasets = {}
+loaded_sentences = {}
 tokenized_datasets = {}
 token_count_datasets = {}
 
 for lang in languages:
     print(f"Loading and tokenizing dataset for language: {lang}")
     try:
-        # Load the dataset and limit it to 1000 sentences
+        # Load the dataset and extract the text
         dataset_lang = load_dataset("wikimedia/wikipedia", f"20231101.{lang}", split="train")
-        texts = dataset_lang["text"][:1000]  # Limit to the first 1000 sentences
-        loaded_datasets[lang] = texts  # Store raw dataset
+        documents = dataset_lang["text"][:1000]  # Limit to the first 1000 documents
+        
+        # Split documents into sentences using regex
+        sentences = []
+        for doc in documents:
+            sentences.extend(split_into_sentences(doc))  # Tokenize sentences in the document
+        
+        # Limit to 1000 sentences
+        sentences = sentences[:1000]
+        loaded_sentences[lang] = sentences  # Store raw sentences
 
         # Tokenize using BPE
-        tokenized_data = tokenize_with_bpe(texts, tokenizer)
+        tokenized_data = tokenize(sentences, tokenizer)
         tokenized_datasets[lang] = tokenized_data["tokenized_texts"]
         token_count_datasets[lang] = tokenized_data["token_counts"]
     except Exception as e:
         print(f"Error loading or tokenizing dataset for {lang}: {e}")
+'''
+
+# Display one example sentence and its tokenized form for each language
+for lang in languages:
+    print(f"\nExample for language: {lang}")
+    try:
+        # Check if we have successfully tokenized this language
+        if lang in tokenized_datasets:
+            # Fetch the first sentence and its tokenized version
+            example_sentence = loaded_sentences[lang][0]
+            tokenized_example = tokenized_datasets[lang][0]
+            print(f"Original Sentence: {example_sentence}")
+            print(f"Tokenized Sentence: {tokenized_example}")
+        else:
+            print(f"No tokenized data available for {lang}")
+    except Exception as e:
+        print(f"Error displaying example for {lang}: {e}")
+
+
+'''
+
 
 # Step 2: Calculate Maximum Compression Ratio
 def calculate_max_compression_ratio(texts, token_counts):
@@ -64,7 +103,7 @@ compression_results = []
 for lang in languages:
     print(f"Calculating Maximum Compression Ratio for: {lang}")
     try:
-        texts = loaded_datasets[lang]
+        texts = loaded_sentences[lang]
         token_counts = token_count_datasets[lang]
         max_compression_ratio = calculate_max_compression_ratio(texts, token_counts)
         compression_results.append({"Language": lang, "Max Compression Ratio": max_compression_ratio})
