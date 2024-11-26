@@ -1,0 +1,35 @@
+without GPE 
+
+        Language         Max Compression Ratio
+0       en               6.750000
+1       de               6.384615
+2       ar               5.181818
+3       ru               6.470588
+4       be               2.681818
+
+
+        Language         Minimum Tokenization Parity
+0       en               0.002608
+1       de               0.001302
+2       ar               0.004762
+3       ru               0.004320
+4       be               0.001815
+
+
+with GPE
+
+
+        Language         Max Compression Ratio
+0       en               1.750000
+1       de               1.666667
+2       ar               1.600000
+3       ru               1.666667
+4       be               2.000000
+
+
+        Language         Minimum Tokenization Parity
+0       en               0.001085
+1       de               0.000587
+2       ar               0.002222
+3       ru               0.001560
+4       be               0.000976
