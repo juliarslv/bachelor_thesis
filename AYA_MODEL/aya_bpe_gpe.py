@@ -73,7 +73,7 @@ for lang in languages:
         token_count_datasets[lang] = tokenized_data["token_counts"]
     except Exception as e:
         print(f"Error loading or tokenizing dataset for {lang}: {e}")
-'''
+
 
 # Display one example sentence and its tokenized form for each language
 for lang in languages:
@@ -90,9 +90,6 @@ for lang in languages:
             print(f"No tokenized data available for {lang}")
     except Exception as e:
         print(f"Error displaying example for {lang}: {e}")
-
-
-'''
 
 
 # Step 2: Calculate Maximum Compression Ratio
