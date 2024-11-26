@@ -1,0 +1,8 @@
+        Language  Max Compression Ratio
+0       en               1.8
+1       ar               2.0
+
+
+        Language          Minimum Tokenization Parity
+0       en                0.001208
+1       ar                0.002551
